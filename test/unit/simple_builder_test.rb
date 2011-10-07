@@ -37,6 +37,12 @@ class SimpleBuilderTest < ActionView::TestCase
                      simplebuilder(@template, generate_elements(1), :separator => "-").render)
   end
 
+  def test_render_with_1_element_without_path
+    elements = [BreadcrumbsOnRails::Breadcrumbs::Element.new("Element 1", nil)]
+    @template.expects(:current_page?).times(0).returns(false)
+    assert_dom_equal("Element 1",
+                     simplebuilder(@template, elements).render)
+  end
 
   def test_render
     @template.expects(:current_page?).times(2).returns(false)
@@ -56,6 +62,16 @@ class SimpleBuilderTest < ActionView::TestCase
                      simplebuilder(@template, generate_elements(2)).render)
   end
 
+  def test_render_without_path
+    elements = [
+      BreadcrumbsOnRails::Breadcrumbs::Element.new("Element 1", "/element/1"),
+      BreadcrumbsOnRails::Breadcrumbs::Element.new("Element 2", nil),
+      BreadcrumbsOnRails::Breadcrumbs::Element.new("Element 3", nil)
+    ]
+    @template.expects(:current_page?).times(1).returns(false, true)
+    assert_dom_equal("<a href=\"/element/1\">Element 1</a> &raquo; Element 2 &raquo; Element 3",
+                     simplebuilder(@template, elements).render)
+  end
 
   protected
 
